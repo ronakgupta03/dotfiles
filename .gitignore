@@ -1,0 +1,60 @@
+# Secrets and credentials
+*.key
+*.pem
+*.p12
+*.pfx
+*.pkcs12
+*.crt
+id_rsa*
+id_ed25519*
+id_ecdsa*
+secrets/
+credentials/
+*secret*
+*credential*
+token*
+api_key*
+
+# Environment files
+.env
+.env.*
+*.env
+!.env.example
+
+# Temporary and backup files
+*~
+*.bak
+*.backup
+*.tmp
+*.temp
+*.swp
+*.swo
+*.kate-swp
+.#*
+\#*#
+\#*
+
+# Logs and runtime artifacts
+*.log
+logs/
+nohup.out
+*.pid
+
+# Caches
+.cache/
+__pycache__/
+*.pyc
+*.pyo
+
+# Editor and IDE configurations
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS and build artifacts
+.DS_Store
+Thumbs.db
+build/
+dist/
+node_modules/
