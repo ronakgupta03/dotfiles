@@ -90,7 +90,7 @@
         "on-click": "alacritty -e htop"
     },
     "custom/temperature": {
-        "exec": "~/.config/waybar/scripts/cpu_temp.sh",
+        "exec": "$HOME/.config/waybar/scripts/cpu_temp.sh",
         "return-type": "json",
         "interval": 2,
         "format": "{icon} {text}",
@@ -156,20 +156,20 @@
     },
     "custom/updates": {
         "format": "󰚰 {}",
-        "exec": "checkupdates 2>/dev/null | wc -l",
+        "exec": "checkupdates 2>/dev/null | wc -l || echo 0",
         "interval": 3600,
         "on-click": "alacritty -e sudo pacman -Syu",
         "signal": 8
     },
     "custom/bluetooth": {
-        "exec": "~/.config/waybar/scripts/bluetooth.sh",
+        "exec": "$HOME/.config/waybar/scripts/bluetooth.sh",
         "return-type": "json",
         "interval": 2,
-        "on-click": "~/.config/waybar/scripts/bluetooth.sh toggle",
+        "on-click": "$HOME/.config/waybar/scripts/bluetooth.sh toggle",
         "format": "{}"
     },
     "custom/weather": {
-        "exec": "curl -s 'https://wttr.in/?format=1'",
+        "exec": "curl -s 'https://wttr.in/?format=1' 2>/dev/null || echo '󰖐 N/A'",
         "interval": 3600,
         "format": "{}",
         "tooltip": true
