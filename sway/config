@@ -1,0 +1,346 @@
+########################################
+# VARIABLES (KEEP AT TOP)
+########################################
+
+set $mod Mod4
+
+# Direction keys (arrow keys only)
+set $left Left
+set $down Down
+set $up Up
+set $right Right
+
+# Applications
+set $term alacritty
+set $menu rofi -show drun
+set $file-manager nemo
+set $web-browser firefox
+exec_always dbus-update-activation-environment --systemd XDG_CURRENT_DESKTOP=sway
+
+########################################
+# CURSOR & SEAT
+########################################
+
+seat seat0 xcursor_theme WinSur-dark-cursors 28
+
+########################################
+# OUTPUT / MONITOR CONFIG
+########################################
+
+output eDP-1 mode 1920x1080 scale 1.15 position 0,0
+output HDMI-A-1 mode 1920x1080 scale 1.15 position 0,0
+workspace 1 output eDP-1 HDMI-A-1
+
+########################################
+# WINDOW DECORATION & EFFECTS
+########################################
+
+corner_radius 12
+blur enable
+blur_radius 2
+blur_passes 2
+default_dim_inactive 0.1
+
+########################################
+# COLORSCHEME — TOKYO NIGHT
+########################################
+
+set $bg0 #1a1b26
+set $bg1 #24283b
+set $fg #c0caf5
+set $black #15161e
+set $red #f7768e
+set $green #9ece6a
+set $yellow #e0af68
+set $blue #7aa2f7
+set $magenta #bb9af7
+set $cyan #7dcfff
+set $white #c0caf5
+set $orange #ff9e64
+set $gray #565f89
+
+########################################
+# FONT
+########################################
+
+font pango:Iosevka Nerd Font Mono 12
+
+########################################
+# LOCKSCREEN CONFIG
+########################################
+
+set $lock 'swaylock \
+    --color 2d353b \
+    --inside-color 3a454a \
+    --inside-clear-color 5c6a72 \
+    --inside-ver-color 5a524c \
+    --inside-wrong-color 543a3a \
+    --ring-color 7a8478 \
+    --ring-clear-color a7c080 \
+    --ring-ver-color dbbc7f \
+    --ring-wrong-color e67e80 \
+    --key-hl-color d699b6 \
+    --bs-hl-color e69875 \
+    --separator-color 2d353b \
+    --text-color d3c6aa \
+    --text-clear-color d3c6aa \
+    --text-ver-color d3c6aa \
+    --text-wrong-color d3c6aa \
+    --indicator-radius 100 \
+    --indicator-thickness 10 \
+    --font "Iosevka Nerd Font Mono"'
+
+########################################
+# IDLE / POWER MANAGEMENT
+########################################
+
+exec swayidle -w \
+    timeout 1200 '$lock' \
+    timeout 1200 'swaymsg output "*" power off' \
+    resume 'swaymsg output "*" power on' \
+    before-sleep 'swaylock -f -c 000000'
+
+
+# Laptop lid switch handling (turn off laptop screen when lid is closed, turn on when opened)
+bindswitch --locked --reload lid:on output eDP-1 disable
+bindswitch --locked --reload lid:off output eDP-1 enable
+
+#########################################\
+######## StartUp Program
+exec_always swww-daemon &
+exec_always --no-startup-id bash ~/.config/sway/scripts/wallpaper.sh
+
+
+########################################
+# ENVIRONMENT (WAYLAND / OBS FIX)
+########################################
+
+exec_always dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
+
+########################################
+# AUTOSTART
+########################################
+
+exec autotiling -l 2
+exec_always blueman-applet
+exec nm-applet --indicator
+exec waybar
+exec mako
+
+# Clipboard history
+exec_always wl-paste --type text --watch cliphist store
+exec_always wl-paste --type image --watch cliphist store
+
+# NWG widgets
+exec nwg-wrapper -t sway.pango -p right -mr 10
+exec nwg-wrapper -s quick.sh -a end -p left -ml 10 -mb 10 -r 60
+exec nwg-wrapper -s quote.sh -p left -a end -mb 10 -ml 260
+
+##downlaod manager
+exec_always {
+    export XDG_CURRENT_DESKTOP=sway
+}
+
+# pokit
+exec /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+
+
+
+# NWG Display
+include ~/.config/sway/outputs
+include ~/.config/sway/workspaces
+
+
+
+
+
+
+########################################
+# SCREENSHOT & RECORDING
+########################################
+
+bindsym Print exec sh -c 'grim -g "$(slurp)" - | swappy -f -'
+bindsym Shift+Print exec sh -c 'grim ~/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png'
+bindsym Ctrl+Print exec flameshot gui
+
+########################################
+# LOCK / LOGOUT / DISPLAY
+########################################
+
+bindsym $mod+Shift+t exec swaylock
+bindsym $mod+Shift+e exec /usr/bin/wlogout
+bindsym $mod+Shift+d exec nwg-displays
+
+# APPLICATION SHORTCUTS
+########################################
+
+bindsym $mod+Return exec $term
+bindsym $mod+d exec $menu
+bindsym $mod+e exec $file-manager
+bindsym $mod+b exec $web-browser
+bindsym $mod+w exec bash ~/.config/sway/scripts/wallpaper.sh
+bindsym $mod+m exec kitty -e bluetuith
+
+bindsym ctrl+shift+l exec $lock
+bindsym ctrl+alt+delete exec nwg-bar
+
+########################################
+# CLIPBOARD & EMOJI
+########################################
+
+bindsym $mod+v exec cliphist list | rofi -dmenu -p "Clipboard" -theme ~/.config/rofi/clipboard.rasi | cliphist decode | wl-copy
+bindsym $mod+s exec rofi -show emoji -modi emoji -matching regex -sorting-method levenshtein
+
+########################################
+# WINDOW MANAGEMENT
+########################################
+
+bindsym $mod+shift+q kill
+bindsym $mod+Shift+c reload
+
+floating_modifier $mod normal
+bindsym $mod+button1 resize
+
+########################################
+# FOCUS MOVEMENT
+########################################
+
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+
+########################################
+# MOVE WINDOWS
+########################################
+
+bindsym $mod+Shift+$left move left
+bindsym $mod+Shift+$down move down
+bindsym $mod+Shift+$up move up
+bindsym $mod+Shift+$right move right
+
+########################################
+# WORKSPACES
+########################################
+
+bindsym --no-repeat $mod+1 workspace number 1
+bindsym --no-repeat $mod+2 workspace number 2
+bindsym --no-repeat $mod+3 workspace number 3
+bindsym --no-repeat $mod+4 workspace number 4
+bindsym --no-repeat $mod+5 workspace number 5
+bindsym --no-repeat $mod+6 workspace number 6
+bindsym --no-repeat $mod+7 workspace number 7
+bindsym --no-repeat $mod+8 workspace number 8
+bindsym --no-repeat $mod+9 workspace number 9
+bindsym --no-repeat $mod+0 workspace number 10
+
+bindsym $mod+Shift+1 move container to workspace number 1
+bindsym $mod+Shift+3 move container to workspace number 3
+bindsym $mod+Shift+4 move container to workspace number 4
+bindsym $mod+Shift+5 move container to workspace number 5
+bindsym $mod+Shift+6 move container to workspace number 6
+bindsym $mod+Shift+7 move container to workspace number 7
+bindsym $mod+Shift+8 move container to workspace number 8
+bindsym $mod+Shift+9 move container to workspace number 9
+bindsym $mod+Shift+0 move container to workspace number 10
+
+########################################
+# LAYOUT & MODES
+########################################
+
+bindsym $mod+shift+s layout stacking
+bindsym $mod+p splith
+bindsym $mod+o splitv
+bindsym $mod+f fullscreen
+bindsym $mod+Shift+space floating toggle
+bindsym $mod+space focus mode_toggle
+
+########################################
+# SCRATCHPAD
+########################################
+
+bindsym $mod+Shift+minus move scratchpad
+bindsym $mod+minus scratchpad show
+
+########################################
+# RESIZE MODE
+########################################
+
+mode "resize" {
+    bindsym $left resize shrink width 10px
+    bindsym $down resize grow height 10px
+    bindsym $up resize shrink height 10px
+    bindsym $right resize grow width 10px
+
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+bindsym $mod+r mode "resize"
+
+########################################
+# MEDIA KEYS
+########################################
+
+bindsym --locked XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
+bindsym --locked XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%
+bindsym --locked XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
+bindsym --locked XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle
+
+bindsym --locked XF86MonBrightnessDown exec brightnessctl set 5%-
+bindsym --locked XF86MonBrightnessUp exec brightnessctl set 5%+
+
+
+################################################
+bindsym $mod+Shift+R exec ~/.config/sway/scripts/dev_layout.sh
+bindsym $mod+Shift+P exec ~/.config/sway/scripts/pomotroid_resize.sh
+###################################################
+
+###############################################################
+## scratchpd show
+#bindsym $mod+Shift+b scratchpad show
+#################################################################
+
+
+########################################
+# WINDOW RULES
+########################################
+
+#for_window [app_id="yad"] floating enable
+#for_window [app_id="org.pulseaudio.pavucontrol"] floating enable, move position center, resize set 600 400
+#for_window [app_id="firefox"] move to scratchpad
+#for_window [class="firefox"] move to scratchpad
+
+########################################
+# BORDERS & GAPS
+########################################
+
+client.focused $blue $bg1 $fg $blue $blue
+client.unfocused $bg0 $bg0 $fg $bg0 $bg0
+client.urgent $red $bg1 $fg $red $red
+
+gaps inner 4
+gaps outer 4
+default_border pixel 2
+titlebar_padding 8 2
+titlebar_border_thickness 2
+
+########################################
+# INPUT
+########################################
+
+input type:touchpad {
+    tap enabled
+    tap_button_map lrm
+    dwt enabled
+    natural_scroll disabled
+}
+
+input type:pointer {
+    natural_scroll disabled
+}
+
+########################################
+# SYSTEM CONFIG INCLUDE
+########################################
+
+#include @sysconfdir@/sway/config.d/*
