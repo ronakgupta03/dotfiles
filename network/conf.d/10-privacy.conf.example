@@ -1,0 +1,11 @@
+# NetworkManager Privacy & MAC Address Randomization Template
+# Place in /etc/NetworkManager/conf.d/10-privacy.conf
+
+[device]
+# Randomize Wi-Fi MAC address during network scanning
+wifi.scan-rand-mac-address=yes
+
+[connection]
+# Generate a randomized MAC address per Wi-Fi connection
+wifi.cloned-mac-address=random
+ethernet.cloned-mac-address=random
