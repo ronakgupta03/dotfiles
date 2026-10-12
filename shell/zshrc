@@ -53,6 +53,13 @@ if [[ -d "$HOME/.bun" ]]; then
   [ -s "$BUN_INSTALL/_bun" ] && source "$BUN_INSTALL/_bun"
 fi
 
+# Load aliases and shell helper functions
+if [[ -f "$HOME/.config/shell/aliases.sh" ]]; then
+  source "$HOME/.config/shell/aliases.sh"
+elif [[ -f "${0:A:h}/aliases.sh" ]]; then
+  source "${0:A:h}/aliases.sh"
+fi
+
 # Powerlevel10k theme configuration
 [[ -f "$HOME/.p10k.zsh" ]] && source "$HOME/.p10k.zsh"
 (( ! ${+functions[p10k]} )) || p10k finalize

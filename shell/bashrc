@@ -33,6 +33,13 @@ if [[ -d "$HOME/.bun" ]]; then
   export PATH="$BUN_INSTALL/bin:$PATH"
 fi
 
+# Load aliases and shell helper functions
+if [[ -f "$HOME/.config/shell/aliases.sh" ]]; then
+  source "$HOME/.config/shell/aliases.sh"
+elif [[ -f "$(dirname "${BASH_SOURCE[0]}")/aliases.sh" ]]; then
+  source "$(dirname "${BASH_SOURCE[0]}")/aliases.sh"
+fi
+
 # Load machine-specific secrets and uncommitted environment overrides
 if [[ -f "$HOME/.bashrc.local" ]]; then
   source "$HOME/.bashrc.local"
