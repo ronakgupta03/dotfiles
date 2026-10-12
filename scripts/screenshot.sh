@@ -1,5 +1,13 @@
 #!/bin/sh
 # Desktop screenshot helper for Sway / Wayland
+# Dependencies: grim, wl-copy, slurp (for area), swappy (optional)
+
+set -eu
+
+if ! command -v grim >/dev/null 2>&1; then
+    echo "Error: grim is required for screenshots but not installed." >&2
+    exit 1
+fi
 
 SAVE_DIR="${XDG_PICTURES_DIR:-$HOME/Pictures}/Screenshots"
 mkdir -p "$SAVE_DIR"
@@ -17,46 +25,55 @@ notify() {
     fi
 }
 
-case "$1" in
+copy_to_clipboard() {
+    if command -v wl-copy >/dev/null 2>&1; then
+        wl-copy < "$1"
+    fi
+}
+
+case "${1:-}" in
     area)
-        # Interactive region selection with slurp, optional annotation with swappy
-        GEOM=$(slurp 2>/dev/null)
+        if ! command -v slurp >/dev/null 2>&1; then
+            echo "Error: slurp is required for area selection." >&2
+            exit 1
+        fi
+        GEOM=$(slurp 2>/dev/null || true)
         [ -z "$GEOM" ] && exit 0
+
         grim -g "$GEOM" "$FILENAME"
-        wl-copy < "$FILENAME"
-        if command -v swappy >/dev/null 2>&1 && [ "$2" = "--edit" ]; then
+        copy_to_clipboard "$FILENAME"
+
+        if [ "${2:-}" = "--edit" ] && command -v swappy >/dev/null 2>&1; then
             swappy -f "$FILENAME"
         else
             notify "$FILENAME"
         fi
         ;;
     full)
-        # Capture all active outputs
         grim "$FILENAME"
-        wl-copy < "$FILENAME"
+        copy_to_clipboard "$FILENAME"
         notify "$FILENAME"
         ;;
     window)
-        # Capture focused Sway window
+        GEOM=""
         if command -v swaymsg >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
-            GEOM=$(swaymsg -t get_tree | jq -r '.. | select(.focused? == true).rect | "\(.x),\(.y) \(.width)x\(.height)"')
-            if [ -n "$GEOM" ]; then
-                grim -g "$GEOM" "$FILENAME"
-                wl-copy < "$FILENAME"
-                notify "$FILENAME"
-            else
-                grim "$FILENAME"
-                wl-copy < "$FILENAME"
-                notify "$FILENAME"
-            fi
+            GEOM=$(swaymsg -t get_tree 2>/dev/null | jq -r '.. | select(.focused? == true).rect | "\(.x),\(.y) \(.width)x\(.height)" 2>/dev/null' || true)
+        fi
+
+        if [ -n "$GEOM" ]; then
+            grim -g "$GEOM" "$FILENAME"
         else
             grim "$FILENAME"
-            wl-copy < "$FILENAME"
-            notify "$FILENAME"
         fi
+        copy_to_clipboard "$FILENAME"
+        notify "$FILENAME"
+        ;;
+    -h|--help|help)
+        echo "Usage: $(basename "$0") {area|full|window} [--edit]"
+        exit 0
         ;;
     *)
-        echo "Usage: $0 {area|full|window} [--edit]"
+        echo "Usage: $(basename "$0") {area|full|window} [--edit]" >&2
         exit 1
         ;;
 esac
