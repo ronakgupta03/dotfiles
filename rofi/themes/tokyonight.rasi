@@ -1,0 +1,50 @@
+* {
+    /* Base colors */
+    background-color: #1a1b26;
+    foreground-color: #a9b1d6;   /* readable light blue */
+    border-color: #7aa2f7;
+    selected-background: #24283b;
+    selected-foreground: #c0caf5;
+
+    /* Text roles */
+    text-color: #a9b1d6;
+    alt-text-color: #7982a9;
+}
+
+window {
+    background-color: #1a1b26;
+    border: 2px;
+    border-color: #7aa2f7;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+inputbar {
+    background-color: #24283b;
+    text-color: #c0caf5;
+    padding: 8px;
+}
+
+prompt {
+    text-color: #7aa2f7;   /* Tokyo Night blue */
+}
+
+entry {
+    text-color: #c0caf5;
+}
+
+listview {
+    background-color: transparent;
+    spacing: 6px;
+}
+
+element {
+    background-color: transparent;
+    text-color: #a9b1d6;   /* visible dark-blue text */
+    padding: 6px;
+}
+
+element selected {
+    background-color: #24283b;
+    text-color: #c0caf5;   /* bright when selected */
+}
