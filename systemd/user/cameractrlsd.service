@@ -1,0 +1,13 @@
+[Unit]
+Description=CameraCtrls daemon - restore control values
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/cameractrls/cameractrlsd.py
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=graphical-session.target
