@@ -17,8 +17,12 @@
         "network",
         "cpu",
         "memory",
+        "custom/temperature",
         "battery",
         "disk",
+        "custom/uptime",
+        "custom/updates",
+        "custom/bluetooth",
         "tray"
     ],
     "sway/workspaces": {
@@ -85,6 +89,14 @@
         "interval": 2,
         "on-click": "alacritty -e htop"
     },
+    "custom/temperature": {
+        "exec": "~/.config/waybar/scripts/cpu_temp.sh",
+        "return-type": "json",
+        "interval": 2,
+        "format": "{icon} {text}",
+        "format-icons": ["󱃃", "󰔏", "󱃂"],
+        "on-click-left": "alacritty -e sh -c 'sensors | less'"
+    },
     "battery": {
         "states": {
             "good": 95,
@@ -136,6 +148,39 @@
         "format": "󰋊 {percentage_used}%",
         "path": "/",
         "on-click": "alacritty -e gdu /"
+    },
+    "custom/uptime": {
+        "format": "󰔟 {}",
+        "exec": "uptime -p | sed 's/up //; s/ days/d/; s/ hours/h/; s/ minutes/m/'",
+        "interval": 60
+    },
+    "custom/updates": {
+        "format": "󰚰 {}",
+        "exec": "checkupdates 2>/dev/null | wc -l",
+        "interval": 3600,
+        "on-click": "alacritty -e sudo pacman -Syu",
+        "signal": 8
+    },
+    "custom/bluetooth": {
+        "exec": "~/.config/waybar/scripts/bluetooth.sh",
+        "return-type": "json",
+        "interval": 2,
+        "on-click": "~/.config/waybar/scripts/bluetooth.sh toggle",
+        "format": "{}"
+    },
+    "custom/weather": {
+        "exec": "curl -s 'https://wttr.in/?format=1'",
+        "interval": 3600,
+        "format": "{}",
+        "tooltip": true
+    },
+    "custom/playerctl": {
+        "format": "󰐊 {}",
+        "return-type": "json",
+        "max-length": 40,
+        "exec": "playerctl -a metadata --format '{\"text\": \"{{artist}} - {{markup_escape(title)}}\", \"tooltip\": \"{{playerName}} : {{artist}} - {{markup_escape(title)}}\", \"alt\": \"{{status}}\", \"class\": \"{{status}}\"}' -F",
+        "on-click": "playerctl play-pause",
+        "on-click-right": "playerctl next"
     },
     "tray": {
         "icon-size": 18,
