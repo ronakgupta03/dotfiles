@@ -1,0 +1,9 @@
+# Optional Applications & Media
+discord
+fastfetch
+firefox
+flameshot
+gdu
+mpv
+obs-studio
+vlc

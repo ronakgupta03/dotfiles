@@ -1,0 +1,8 @@
+# Desktop Fonts and Icon Themes
+adwaita-icon-theme
+noto-fonts
+noto-fonts-cjk
+noto-fonts-emoji
+papirus-icon-theme
+ttf-font-awesome
+ttf-iosevka-nerd

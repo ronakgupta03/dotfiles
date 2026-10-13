@@ -1,0 +1,18 @@
+# Development Tools & Shell
+base-devel
+btop
+clang
+cmake
+curl
+docker
+eza
+fd
+fzf
+git
+htop
+neovim
+python
+ripgrep
+tmux
+wget
+zsh
