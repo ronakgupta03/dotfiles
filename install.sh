@@ -1,5 +1,8 @@
 #!/bin/sh
 # Dotfiles Installation & Bootstrap Script
+# Safely links configurations with automated backup protection and dry-run preview
+
+set -eu
 
 DOTFILES_DIR="$(cd "$(dirname "$0")" && pwd)"
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}"
@@ -10,12 +13,45 @@ BACKUP_DIR="$BACKUP_BASE/$TIMESTAMP"
 BACKUP_CREATED=false
 DRY_RUN=false
 
+show_help() {
+    cat <<EOF
+Usage: $(basename "$0") [OPTIONS]
+
+Options:
+    -n, --dry-run    Simulate installation without modifying files or creating links
+    -h, --help       Show this help message and exit
+
+Description:
+    Symlinks modular dotfiles from this repository into ~/.config and user home.
+    If an existing file or directory is found, it is safely moved into a timestamped
+    backup directory at ~/.dotfiles_backup/<timestamp>/ before linking.
+EOF
+}
+
+# Parse command line options
 for arg in "$@"; do
     case "$arg" in
         -n|--dry-run)
             DRY_RUN=true
             ;;
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        *)
+            echo "Error: unrecognized option '$arg'" >&2
+            show_help >&2
+            exit 1
+            ;;
     esac
+done
+
+# Verify required core utilities
+for cmd in ln mkdir readlink date mv; do
+    if ! command -v "$cmd" >/dev/null 2>&1; then
+        echo "Error: required utility '$cmd' is not available in PATH." >&2
+        exit 1
+    fi
 done
 
 if [ "$DRY_RUN" = true ]; then
@@ -33,6 +69,7 @@ backup_if_needed() {
     source="$2"
 
     if [ -e "$target" ] || [ -L "$target" ]; then
+        # Already pointing to correct source link
         if [ -L "$target" ] && [ "$(readlink -f "$target")" = "$(readlink -f "$source")" ]; then
             return 0
         fi
@@ -61,6 +98,11 @@ link_item() {
     src="$1"
     dst="$2"
 
+    if [ ! -e "$src" ]; then
+        echo "[WARN] Source path does not exist, skipping: $src" >&2
+        return 0
+    fi
+
     backup_if_needed "$dst" "$src"
 
     if [ "$DRY_RUN" = true ]; then
@@ -86,7 +128,9 @@ done
 # 3. Systemd user units
 if [ -d "$DOTFILES_DIR/systemd/user" ]; then
     for unit in "$DOTFILES_DIR/systemd/user"/*; do
-        [ -f "$unit" ] && link_item "$unit" "$CONFIG_DIR/systemd/user/$(basename "$unit")"
+        if [ -f "$unit" ]; then
+            link_item "$unit" "$CONFIG_DIR/systemd/user/$(basename "$unit")"
+        fi
     done
 fi
 
