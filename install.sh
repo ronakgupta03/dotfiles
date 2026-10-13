@@ -4,16 +4,47 @@
 DOTFILES_DIR="$(cd "$(dirname "$0")" && pwd)"
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}"
 BIN_DIR="$HOME/.local/bin"
+BACKUP_BASE="${HOME}/.dotfiles_backup"
+TIMESTAMP="$(date +%Y%m%d_%H%M%S)"
+BACKUP_DIR="$BACKUP_BASE/$TIMESTAMP"
+BACKUP_CREATED=false
 
 echo "==> Installing dotfiles from $DOTFILES_DIR"
 
 # Ensure target directories exist
 mkdir -p "$CONFIG_DIR" "$CONFIG_DIR/shell" "$CONFIG_DIR/systemd/user" "$BIN_DIR"
 
+backup_if_needed() {
+    target="$1"
+    source="$2"
+
+    # If target exists and is not already correctly symlinked to source
+    if [ -e "$target" ] || [ -L "$target" ]; then
+        if [ -L "$target" ] && [ "$(readlink -f "$target")" = "$(readlink -f "$source")" ]; then
+            return 0
+        fi
+
+        if [ "$BACKUP_CREATED" = false ]; then
+            mkdir -p "$BACKUP_DIR"
+            BACKUP_CREATED=true
+            echo "==> Created backup directory at $BACKUP_DIR"
+        fi
+
+        rel_path="${target#$HOME/}"
+        dest_backup="$BACKUP_DIR/$rel_path"
+        mkdir -p "$(dirname "$dest_backup")"
+        echo "[BACKUP] Moving existing $target -> $dest_backup"
+        mv "$target" "$dest_backup"
+    fi
+}
+
 link_item() {
     src="$1"
     dst="$2"
-    echo "Linking $src -> $dst"
+
+    backup_if_needed "$dst" "$src"
+
+    echo "[LINK] $src -> $dst"
     ln -sf "$src" "$dst"
 }
 
@@ -49,4 +80,7 @@ fi
 # 5. Root dotfiles
 [ -f "$DOTFILES_DIR/.Xresources" ] && link_item "$DOTFILES_DIR/.Xresources" "$HOME/.Xresources"
 
+if [ "$BACKUP_CREATED" = true ]; then
+    echo "==> Existing configuration backed up to: $BACKUP_DIR"
+fi
 echo "==> Installation complete!"
