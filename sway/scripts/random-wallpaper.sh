@@ -1,6 +1,8 @@
 #!/bin/bash
 
-WALLPAPER_DIR="/home/asus-ronak/walls"
+WALLPAPER_DIR="${WALLPAPER_DIR:-$HOME/Pictures/Wallpapers}"
+[ -d "$WALLPAPER_DIR" ] || WALLPAPER_DIR="$HOME/Wallpapers"
+[ -d "$WALLPAPER_DIR" ] || WALLPAPER_DIR="$HOME/Pictures"
 
 # Pick a random image
 WALLPAPER=$(find "$WALLPAPER_DIR" -type f \
