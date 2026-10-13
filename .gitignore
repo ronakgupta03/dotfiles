@@ -1,25 +1,67 @@
-# Secrets and credentials
+# Secrets, private keys and certificates
 *.key
 *.pem
 *.p12
 *.pfx
 *.pkcs12
 *.crt
+*.csr
+*.der
+*.keystore
+*.jks
+*.asc
+*.sec
 id_rsa*
 id_ed25519*
 id_ecdsa*
+known_hosts*
+secring.*
+pubring.*
 secrets/
 credentials/
 *secret*
 *credential*
 token*
 api_key*
+.netrc
+.npmrc
+.pypirc
+.dockercfg
 
-# Environment files
+# Cloud and provider credentials
+.aws/
+.gcp/
+.azure/
+credentials.csv
+
+# Network and Wi-Fi credentials
+*.nmconnection
+wpa_supplicant.conf
+
+# Environment and machine-local files
 .env
 .env.*
 *.env
 !.env.example
+*.local
+!*.local.example
+outputs.local
+.zshrc.local
+.bashrc.local
+
+# Databases, session cookies and state
+*.sqlite
+*.sqlite3
+*.db
+cookies.sqlite
+webappsstore.sqlite
+
+# Shell history and REPL logs
+.bash_history
+.zsh_history
+.python_history
+.node_repl_history
+.lesshst
 
 # Temporary and backup files
 *~
