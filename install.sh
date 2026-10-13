@@ -8,19 +8,40 @@ BACKUP_BASE="${HOME}/.dotfiles_backup"
 TIMESTAMP="$(date +%Y%m%d_%H%M%S)"
 BACKUP_DIR="$BACKUP_BASE/$TIMESTAMP"
 BACKUP_CREATED=false
+DRY_RUN=false
 
+for arg in "$@"; do
+    case "$arg" in
+        -n|--dry-run)
+            DRY_RUN=true
+            ;;
+    esac
+done
+
+if [ "$DRY_RUN" = true ]; then
+    echo "==> Running in DRY-RUN mode (no files will be modified)"
+fi
 echo "==> Installing dotfiles from $DOTFILES_DIR"
 
 # Ensure target directories exist
-mkdir -p "$CONFIG_DIR" "$CONFIG_DIR/shell" "$CONFIG_DIR/systemd/user" "$BIN_DIR"
+if [ "$DRY_RUN" = false ]; then
+    mkdir -p "$CONFIG_DIR" "$CONFIG_DIR/shell" "$CONFIG_DIR/systemd/user" "$BIN_DIR"
+fi
 
 backup_if_needed() {
     target="$1"
     source="$2"
 
-    # If target exists and is not already correctly symlinked to source
     if [ -e "$target" ] || [ -L "$target" ]; then
         if [ -L "$target" ] && [ "$(readlink -f "$target")" = "$(readlink -f "$source")" ]; then
+            return 0
+        fi
+
+        rel_path="${target#$HOME/}"
+        dest_backup="$BACKUP_DIR/$rel_path"
+
+        if [ "$DRY_RUN" = true ]; then
+            echo "[DRY-RUN] Would backup $target -> $dest_backup"
             return 0
         fi
 
@@ -30,8 +51,6 @@ backup_if_needed() {
             echo "==> Created backup directory at $BACKUP_DIR"
         fi
 
-        rel_path="${target#$HOME/}"
-        dest_backup="$BACKUP_DIR/$rel_path"
         mkdir -p "$(dirname "$dest_backup")"
         echo "[BACKUP] Moving existing $target -> $dest_backup"
         mv "$target" "$dest_backup"
@@ -44,8 +63,12 @@ link_item() {
 
     backup_if_needed "$dst" "$src"
 
-    echo "[LINK] $src -> $dst"
-    ln -sf "$src" "$dst"
+    if [ "$DRY_RUN" = true ]; then
+        echo "[DRY-RUN] Would link $src -> $dst"
+    else
+        echo "[LINK] $src -> $dst"
+        ln -sf "$src" "$dst"
+    fi
 }
 
 # 1. XDG Config directories
@@ -80,7 +103,9 @@ fi
 # 5. Root dotfiles
 [ -f "$DOTFILES_DIR/.Xresources" ] && link_item "$DOTFILES_DIR/.Xresources" "$HOME/.Xresources"
 
-if [ "$BACKUP_CREATED" = true ]; then
+if [ "$DRY_RUN" = true ]; then
+    echo "==> Dry-run simulation finished cleanly."
+elif [ "$BACKUP_CREATED" = true ]; then
     echo "==> Existing configuration backed up to: $BACKUP_DIR"
 fi
-echo "==> Installation complete!"
+echo "==> Done!"
