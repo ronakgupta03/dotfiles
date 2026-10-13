@@ -1,0 +1,7 @@
+[Unit]
+Description=Clean user thumbnail and application cache
+Documentation=man:systemd.service(5)
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c 'find %h/.cache/thumbnails/ -type f -atime +30 -delete 2>/dev/null || true'
