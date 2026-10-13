@@ -211,3 +211,52 @@ ls -la ~/.dotfiles_backup/
 # Restore a specific component
 cp -r ~/.dotfiles_backup/<TIMESTAMP>/sway ~/.config/
 ```
+
+## Configuration Reference & Component Index
+
+Detailed documentation is maintained within each component directory:
+
+| Component | Path | Documentation | Description |
+| :--- | :--- | :--- | :--- |
+| **Window Manager** | `sway/` | [`sway/README.md`](sway/README.md) | Modular configs (`config.d/`), keybindings, modes, and autostart |
+| **Status Bar** | `waybar/` | [`docs/THEME.md`](docs/THEME.md) | JSON layout, custom scripts (`bluetooth`, `cpu_temp`), CSS themes |
+| **Shell Environment** | `shell/` | [`shell/README.md`](shell/README.md) | Zsh, Bash, aliases (`..`, `mkcd`, `extract`), and secret isolation |
+| **Terminals** | `alacritty/`, `kitty/` | [`shell/README.md`](shell/README.md) | Alacritty (blur/opacity) and Kitty (Tokyo Night palette) |
+| **Theme & Styling** | `mako/`, `rofi/`, `gtk-*/` | [`docs/THEME.md`](docs/THEME.md) | Unified Tokyo Night palette, Iosevka Nerd Font, Papirus icons |
+| **Desktop Scripts** | `scripts/` | [`scripts/`](scripts/) | CLI helpers for brightness, volume/mute, screenshots, clipboard |
+| **Audio & Codecs** | `wireplumber/` | [`bluetooth/README.md`](bluetooth/README.md) | WirePlumber BlueZ profiles, SBC-XQ, and mSBC codecs |
+| **Network** | `network/` | [`network/README.md`](network/README.md) | NetworkManager daemon integration, nmtui, and privacy configs |
+| **User Systemd** | `systemd/` | [`systemd/README.md`](systemd/README.md) | User units, weekly cache cleaner timer, and session targets |
+| **Package Manifests**| `packages/` | [`packages/README.md`](packages/README.md) | Explicit Arch (`pacman`) and AUR lists with categorized bundles |
+| **Portability** | `templates/` | [`docs/PORTABILITY.md`](docs/PORTABILITY.md) | Monitor output templates and machine-specific shell overrides |
+
+---
+
+## Core Keyboard Shortcuts
+
+| Shortcut | Action |
+| :--- | :--- |
+| `$mod + Return` | Launch terminal (`alacritty`) |
+| `$mod + d` | Open Rofi application launcher |
+| `$mod + e` | Open file manager (`nemo`) |
+| `$mod + b` | Open web browser (`firefox`) |
+| `$mod + m` | Open Bluetooth manager (`blueman-manager`) |
+| `$mod + v` | Open clipboard history menu (`cliphist` + `rofi`) |
+| `$mod + Shift + q` | Close focused window |
+| `$mod + Shift + c` | Reload Sway live |
+| `$mod + f` | Toggle fullscreen |
+| `$mod + Shift + Space` | Toggle floating mode |
+| `$mod + [1-0]` | Switch workspace |
+| `$mod + Shift + [1-0]` | Move window to workspace |
+| `Print` | Interactive screenshot (`grim` + `slurp` + `swappy`) |
+| `Shift + Print` | Fullscreen screenshot to `~/Pictures` |
+| `XF86MonBrightness[Up/Down]` | Adjust display brightness (with OSD) |
+| `XF86Audio[Raise/Lower/Mute]` | Adjust audio volume and mute (with OSD) |
+
+*Full keybinding documentation available in [`sway/README.md`](sway/README.md).*
+
+---
+
+## License
+
+Released under the [MIT License](LICENSE). Copyright (c) 2026 Ronak Gupta.
