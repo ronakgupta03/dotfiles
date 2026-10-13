@@ -144,3 +144,70 @@ sudo systemctl enable --now NetworkManager bluetooth
 # Start Sway session
 sway
 ```
+
+## Troubleshooting & Diagnostics
+
+### 1. Sway & Display Issues
+
+- **Nvidia GPU Launch Warning**:
+  If using proprietary Nvidia drivers, launch Sway with the `--unsupported-gpu` flag:
+  ```bash
+  sway --unsupported-gpu
+  ```
+- **Syntax Validation**:
+  Verify your configuration syntax without restarting the session:
+  ```bash
+  sway --unsupported-gpu -C -c ~/.config/sway/config
+  ```
+- **Display Not Detected**:
+  Check available outputs and connector names:
+  ```bash
+  swaymsg -t get_outputs
+  ```
+  Update `~/.config/sway/outputs` or launch `nwg-displays`.
+
+### 2. Audio & Media Issues
+
+- **Audio Output Not Switching**:
+  Check PipeWire/WirePlumber status:
+  ```bash
+  wpctl status
+  wpctl set-default <SINK_ID>
+  ```
+- **Restart Audio Daemon**:
+  ```bash
+  systemctl --user restart pipewire wireplumber pipewire-pulse
+  ```
+
+### 3. Bluetooth Issues
+
+- **"No default controller available"**:
+  Ensure the Bluetooth service is active and unblocked:
+  ```bash
+  sudo systemctl start bluetooth
+  rfkill unblock bluetooth
+  ```
+
+### 4. Status Bar (Waybar)
+
+- **Restart Waybar Live**:
+  ```bash
+  pkill waybar && waybar >/dev/null 2>&1 &
+  ```
+- **Missing Icons or Glyphs**:
+  Rebuild font cache if Nerd Font symbols appear as boxes:
+  ```bash
+  fc-cache -fv
+  ```
+
+### 5. Restoring Previous Configurations
+
+If you need to revert any replaced files, restore them from your timestamped backup:
+
+```bash
+# View existing backup snapshots
+ls -la ~/.dotfiles_backup/
+
+# Restore a specific component
+cp -r ~/.dotfiles_backup/<TIMESTAMP>/sway ~/.config/
+```
