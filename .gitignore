@@ -42,8 +42,11 @@ wpa_supplicant.conf
 .env
 .env.*
 *.env
-!.env.example
 *.local
+outputs.local
+.zshrc.local
+.bashrc.local
+!*.example
 !*.local.example
 outputs.local
 .zshrc.local
