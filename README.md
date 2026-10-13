@@ -31,6 +31,38 @@ dotfiles/
 └── packages/   # Explicit package manifests (Pacman and AUR)
 ```
 
-## Setup & Development
+## Desktop Architecture Overview
 
-Configurations in this repository are managed modularly and linked to `~/.config/` or system paths. Detailed installation automation and bootstrap instructions will be integrated as development progresses.
+The environment is designed as a lightweight, keyboard-driven Wayland desktop built around modular system utilities:
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│                       Sway Compositor (Wayland)                        │
+├─────────────────┬───────────────────┬──────────────────────────────────┤
+│   Waybar (Top)  │   Rofi Launcher   │       Mako Notifications         │
+│  System status, │   App launcher,   │   Tokyo Night notification popup │
+│  workspaces,    │   clipboard,      │   with urgency border routing    │
+│  volume, battery│   power menu      │                                  │
+├─────────────────┴───────────────────┴──────────────────────────────────┤
+│                          Terminal & Shell                              │
+│   • Alacritty (Primary, 60% opacity + blur)                            │
+│   • Kitty (Secondary, full Tokyo Night theme)                          │
+│   • Zsh + Powerlevel10k + Oh-My-Zsh                                    │
+├────────────────────────────────────────────────────────────────────────┤
+│                          Audio & Hardware                              │
+│   • PipeWire + WirePlumber (Bluetooth SBC-XQ / mSBC HD codecs)         │
+│   • Brightnessctl & pactl/wpctl synchronous OSD helpers                │
+│   • NetworkManager & Blueman applets                                   │
+├────────────────────────────────────────────────────────────────────────┤
+│                       Session Lifecycle                                │
+│   • Systemd user targets (graphical-session.target, sway-session)      │
+│   • Background daemons (swww, cliphist, autotiling, polkit-qt6)        │
+└────────────────────────────────────────────────────────────────────────┘
+```
+
+### Layer Interactions
+
+1. **Compositor & Window Management**: Sway handles window layout, tiling, gaps, margins, and keybindings. Modular includes in `sway/config.d/` separate concern areas.
+2. **Status & Feedback**: Waybar polls system metrics directly from Linux `/sys/class/` hwmon and PipeWire IPC, falling back gracefully if hardware or network is offline.
+3. **User Input & Workflow**: Keybindings trigger lightweight standalone POSIX scripts in `scripts/` which manage state changes and send low-latency notification feedback via `notify-send`.
+4. **Theme Cohesion**: The Tokyo Night color palette is uniformly defined across Sway window borders, Waybar GTK CSS, Rofi themes, Mako notifications, and terminal emulators.
