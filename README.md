@@ -66,3 +66,81 @@ The environment is designed as a lightweight, keyboard-driven Wayland desktop bu
 2. **Status & Feedback**: Waybar polls system metrics directly from Linux `/sys/class/` hwmon and PipeWire IPC, falling back gracefully if hardware or network is offline.
 3. **User Input & Workflow**: Keybindings trigger lightweight standalone POSIX scripts in `scripts/` which manage state changes and send low-latency notification feedback via `notify-send`.
 4. **Theme Cohesion**: The Tokyo Night color palette is uniformly defined across Sway window borders, Waybar GTK CSS, Rofi themes, Mako notifications, and terminal emulators.
+
+## Installation & Setup Guide
+
+### 1. Prerequisites
+
+Ensure your Arch Linux installation is updated and has `git` and `base-devel`:
+
+```bash
+sudo pacman -Syu --needed git base-devel
+```
+
+### 2. Clone Repository
+
+```bash
+git clone https://github.com/ronakgupta03/dotfiles.git ~/dotfiles
+cd ~/dotfiles
+```
+
+### 3. Install Package Dependencies
+
+Install the core desktop stack and required typography:
+
+```bash
+# Core desktop environment (Sway, Waybar, Mako, Rofi, Audio, Bluetooth)
+sudo pacman -S --needed - < packages/core-desktop.txt
+
+# Nerd fonts and icon themes
+sudo pacman -S --needed - < packages/fonts-themes.txt
+
+# (Optional) Developer CLI tools and applications
+sudo pacman -S --needed - < packages/development.txt
+sudo pacman -S --needed - < packages/optional-apps.txt
+```
+
+For AUR packages (e.g. `wlogout`, `swayfx-git`, `yay`):
+
+```bash
+yay -S --needed - < packages/aur-packages.txt
+```
+
+### 4. Deploy Dotfiles via Bootstrap Script
+
+Always test in simulation mode first:
+
+```bash
+# Preview planned symlinks and backups without modifying filesystem
+./install.sh --dry-run
+
+# Execute deployment
+./install.sh
+```
+
+> **Safety Guarantee**: `install.sh` automatically creates a timestamped backup in `~/.dotfiles_backup/<timestamp>/` before replacing any existing file or directory.
+
+### 5. Machine-Specific Configuration
+
+Configure displays and local shell secrets outside of version control:
+
+```bash
+# Set up your display configuration
+cp templates/outputs.conf.example ~/.config/sway/outputs
+
+# Set up local shell overrides and private API keys
+cp templates/zshrc.local.example ~/.zshrc.local
+```
+
+### 6. Enable User Services & Launch
+
+```bash
+# Enable audio and desktop timers
+systemctl --user enable --now pipewire wireplumber pipewire-pulse clean-cache.timer
+
+# Enable system daemons
+sudo systemctl enable --now NetworkManager bluetooth
+
+# Start Sway session
+sway
+```
