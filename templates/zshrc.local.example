@@ -1,0 +1,16 @@
+# Machine-Specific Shell Environment & Secrets Template
+# Copy to ~/.zshrc.local (automatically sourced, ignored by git)
+
+# Workstation API Keys & Secrets
+# export GEMINI_API_KEY="your-gemini-key"
+# export OPENROUTER_API_KEY="your-openrouter-key"
+# export ANTHROPIC_API_KEY=""
+
+# GPU & Hardware Acceleration Environment (Nvidia Wayland example)
+# export LIBVA_DRIVER_NAME=nvidia
+# export GBM_BACKEND=nvidia-drm
+# export __GLX_VENDOR_LIBRARY_NAME=nvidia
+# export WLR_NO_HARDWARE_CURSORS=1
+
+# Workstation Custom Paths
+# export PATH="$HOME/.cargo/bin:$PATH"
